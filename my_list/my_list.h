@@ -14,7 +14,7 @@ typedef struct List
 {
     Node *first;
     Node *last;
-    int size;
+    unsigned int size;
 } List;
 
 /* Creates a new empty list
