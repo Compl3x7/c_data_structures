@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "my_lists.h"
+#include "my_list.h"
 
 
 //Node struct and functions

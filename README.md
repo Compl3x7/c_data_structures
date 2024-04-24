@@ -4,11 +4,11 @@ In this repository I implement some data structures libraries in C, due to the C
 
 ## Data structures implemented until now:
 
-### my_lists (Finished ~2023's summer)
+### my_list (Finished ~2023's summer)
 
-A simple implementation of a linked list I built prior to the making of this repository as a way to study and better consolidate my C programming skills. It's probably not the best implementation, but I have decided to left it like this. Finished around 2023's summer and haven't touched on it ever since.
+A simple implementation of a linked list that I built prior to the making of this repository as a way to study and better consolidate my C programming skills. It's probably not the best implementation, but I have decided to left it like this. Finished around 2023's summer and haven't touched on it ever since.
 
 - 24/04/2024
-    - Changed some function names and added list_find() function.
+    - Changed some function names and added list_find() function and changed the name to my_list.
 
 ##

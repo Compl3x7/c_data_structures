@@ -1,5 +1,5 @@
-#ifndef my_lists_h
-#define my_lists_h
+#ifndef my_list_h
+#define my_list_h
 
 /* Node declaration and it's members
 Auxiliary declaration */

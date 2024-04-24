@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <time.h>
 
-#include "my_lists.h"
+#include "my_list.h"
 
 void remove_duplicates(List *l)
 {
