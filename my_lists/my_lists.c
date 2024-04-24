@@ -1,9 +1,3 @@
-//I'm not okay
-//
-//const char *author = "Alexandre Rodrigues";
-//
-//v7.27
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -13,9 +7,9 @@
 
 //Node struct and functions
 
-/*Creates new node
-Auxiliary function*/
-Node* new_node(double value, Node *next)
+/* Creates new node
+Auxiliary function */
+Node* node_create(double value, Node *next)
 {
     Node *n = malloc(sizeof(Node));
     n->value = value;
@@ -23,8 +17,8 @@ Node* new_node(double value, Node *next)
     return n;
 }
 
-/*Prints node to stdout
-Auxiliary function*/
+/* Prints node to stdout
+Auxiliary function */
 void node_print(Node *n)
 {
     if (n->next == NULL)
@@ -33,9 +27,9 @@ void node_print(Node *n)
        printf("%.2f, ", n->value); 
 }
 
-/*Frees all allocated memory of a node
-Auxiliary function*/
-void free_node(Node *n)
+/* Frees all allocated memory of a node
+Auxiliary function */
+void node_destroy(Node *n)
 {
     free(n);
 }
@@ -43,7 +37,7 @@ void free_node(Node *n)
 
 //List struct and functions
 
-List* new_list()
+List* list_create()
 {
     List *l = malloc(sizeof(List));
     l->first = NULL;
@@ -54,19 +48,19 @@ List* new_list()
 
 void list_println(List *l)
 {
-    printf("[");
+    printf("{");
     Node *n_iterator = l->first;
     while (n_iterator != NULL)
     {
         node_print(n_iterator);
         n_iterator = n_iterator->next; //Goes forward idk
     }
-    printf("]\n");
+    printf("}\n");
 }
 
 //"Getting information" from list functions
 
-int is_list_empty(List *l)
+int list_is_empty(List *l)
 {
     return l->first == NULL;
 }
@@ -102,13 +96,32 @@ double list_get(List *l, int index)
     return n_iterator->value;
 }
 
+int list_find(List *l, double value)
+{
+    assert(l->first != NULL);
+    int index = -1;
+    Node *n_iterator = l->first;
+    int i = 0;
+    while (n_iterator != NULL)
+    {
+        if (n_iterator->value == value)
+        {
+            index = i;
+            break;
+        }
+        n_iterator = n_iterator->next; //Goes forward idk
+        i++;
+    }
+    return index;
+}
+
 //Adding to list functions
 
 void list_add(List *l, double value)
 {
     // Node *old_n = l->first;
-    // Node *new_n = new_node(value, old_n);
-    l->first = new_node(value, l->first);
+    // Node *new_n = node_create(value, old_n);
+    l->first = node_create(value, l->first);
     if (l->first->next == NULL)
         l->last = l->first;
     l->size++;
@@ -129,7 +142,7 @@ void list_add_to_end(List *l, double value)
         list_add(l, value);
     else
     {
-        Node *new_n = new_node(value, NULL);
+        Node *new_n = node_create(value, NULL);
         l->last->next = new_n;
         l->last = new_n;
         l->size++;
@@ -154,8 +167,8 @@ void list_add_at_index(List *l, int index, double value)
         Node *n_iterator = l->first;
         for (int i = 0; i < index - 1; i++) //Goes to element at index - 1
             n_iterator = n_iterator->next; //Goes forward idk
-        //Node *new_n = new_node(value, n_iterator->next);
-        n_iterator->next = new_node(value, n_iterator->next);
+        //Node *new_n = node_create(value, n_iterator->next);
+        n_iterator->next = node_create(value, n_iterator->next);
         l->size++;
     }
 }
@@ -175,16 +188,16 @@ void list_tail_add_at_index(List *l, List *tail, int index, double value)
 
 //Removing from list functions
 
-/*Removes element after given node
+/* Removes element after given node
 Fails assertion if list is empty
-Auxiliary function*/
+Auxiliary function */
 void list_remove_after_element(List *l, Node *before)
 {
     assert(l->first != NULL);
     Node *next_next = before->next->next;
     if (next_next == NULL)
         l->last = before;
-    free_node(before->next);
+    node_destroy(before->next);
     before->next = next_next;
     l->size--;
 }
@@ -194,7 +207,7 @@ void list_remove_first(List *l)
     assert(l->first != NULL);
     Node *n_ptr = l->first;
     l->first = l->first->next;
-    free_node(n_ptr);
+    node_destroy(n_ptr);
     l->size--;
 }
 
@@ -412,7 +425,7 @@ int list_ssort_cmp_descending(const Node *n1, const Node *n2)
 
 List* list_copy(List *l)
 {
-    List *l_cpy = new_list();
+    List *l_cpy = list_create();
     Node *n_iterator = l->first;
     while (n_iterator != NULL)
     {
@@ -425,7 +438,7 @@ List* list_copy(List *l)
 List* list_tail_copy(List *l)
 {
     assert(l->first != NULL);
-    List *l_tail = new_list();
+    List *l_tail = list_create();
     Node *n_iterator = l->first->next;
     while (n_iterator != NULL)
     {
@@ -437,7 +450,7 @@ List* list_tail_copy(List *l)
 
 //Freeing memory functions
 
-void free_list(List *l)
+void list_destroy(List *l)
 {
     while (l->first != NULL)
         list_remove_first(l);

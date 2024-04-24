@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <time.h>
 
 #include "my_lists.h"
 
@@ -15,7 +16,9 @@ void remove_duplicates(List *l)
 
 int main()
 {
-    List *l = new_list();
+    srand(time(NULL));
+    
+    List *l = list_create();
     for (int i = 0; i < 10; i++)
         list_add(l, rand());
     list_println(l);
@@ -24,7 +27,7 @@ int main()
 
     list_println(l);
 
-    free_list(l);
+    list_destroy(l);
 
     return 0;
 }
