@@ -61,7 +61,7 @@ List* list_tail_copy(List *l);
 Fails assertion if list is empty or if given index is invalid */
 double list_get(List *l, int index);
 
-/* Returns index of given value on a list or -1 if none were found
+/* Returns index of the first given value found on a list, from left to right, or -1 if none were found
 Fails assertion if list is empty */
 int list_find(List *l, double value);
 
@@ -111,7 +111,7 @@ void list_remove_last(List *l);
 Fails assertion list is empty, if tail is empty or if tail isn't list´s tail */
 void list_tail_remove_last(List *l, List *tail);
 
-/* Removes first instance of given value
+/* Removes first instance of given value, from left to right
 Returns 1 if it is removed, 0 otherwise
 Fails assertion if list is empty */
 int list_remove(List *l, double value);
