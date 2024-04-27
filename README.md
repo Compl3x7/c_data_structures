@@ -19,6 +19,6 @@ A vector (redimensionable array) implementation.
     - Started implementing, implemented constructor and destructor.
 
 - 27/04/2024
-    - Implemented base functionality like printing to console, base addition of elements with resizing, and some "query" functions.   
+    - Implemented some base functionality like printing to console, basic addition and removal of elements with resizing, and some "query" functions.   
 
 
