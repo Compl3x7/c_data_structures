@@ -1,6 +1,6 @@
 # c_data_structures
 
-In this repository I implement some data structures libraries in C, due to the C language limitations (a.k.a. skill issues :skull:), most of the implementations, if not all, only support the double C type.
+In this repository I implement some data structures libraries in C, due to the C language limitations (a.k.a. skill issues :skull:) most of the implementations, if not all, only support the double C type.
 
 ## Data structures implemented until now:
 
