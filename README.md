@@ -13,4 +13,12 @@ A simple implementation of a linked list that I built prior to the making of thi
 
 ### my_vector (On going...)
 
+A vector (redimensionable array) implementation.
+
+- 24/04/2024
+    - Started implementing, implemented constructor and destructor.
+
+- 27/04/2024
+    - Implemented base functionality like printing to console, base addition of elements with resizing, and some "query" functions.   
+
 
