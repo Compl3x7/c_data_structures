@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 
 #include "my_vector.h"
@@ -40,12 +41,14 @@ double vector_get(Vector *v, int index)
 {
     assert(v->size > 0);
     assert(index >= 0 && index < v->size);
+
     return v->array[index];
 }
 
 int vector_find(Vector *v, double value)
 {
     assert(v->size > 0);
+
     int left = 0;
     int right = v->size - 1;
     while (left <= right)
@@ -82,13 +85,60 @@ void vector_add(Vector *v, double value)
     v->array[v->size++] = value;
 }
 
+void vector_add_at_index(Vector *v, int index, double value)
+{
+    assert(index >= 0 && index < v->size);
+
+    if (v->size >= v->array_size)
+        vector_resize(v, DOUBLE_SIZE);
+    double *src = v->array + index;
+    memmove(src + 1, src, (v->size - index) * sizeof(double));
+    v->array[index] = value;
+    v->size++;
+}
+
+void vector_add_to_start(Vector *v, double value)
+{
+    if (v->size == 0)
+        vector_add(v, value);
+    else
+        vector_add_at_index(v, 0, value);    
+}
 
 void vector_remove(Vector *v)
 {
     assert(v->size > 0);
+
     v->size--; //Lazy delete
     if (v->size < v->array_size >> 1)
         vector_resize(v, HALF_SIZE);
+}
+
+void vector_remove_at_index(Vector *v, int index)
+{
+    assert(v->size > 0);
+    assert(index >= 0 && index < v->size);
+
+    if (index == v->size - 1)
+        vector_remove(v);
+    else
+    {
+        double *src = v->array + index + 1;
+        memmove(src - 1, src, (v->size - index) * sizeof(double));
+        v->size--;
+        if (v->size < v->array_size >> 1)
+            vector_resize(v, HALF_SIZE);
+    }
+}
+
+void vector_remove_first(Vector *v)
+{
+    assert(v->size > 0);
+
+    if (v->size == 1)
+        vector_remove(v);
+    else
+        vector_remove_at_index(v, 0);    
 }
 
 

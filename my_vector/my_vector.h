@@ -34,11 +34,25 @@ int vector_find(Vector *v, double value);
 /* Adds given value at the end of a vector */
 void vector_add(Vector *v, double value);
 
+/* Adds given value at given index of a vector 
+Fails assertion if given index is invalid */
+void vector_add_at_index(Vector *v, int index, double value);
+
+/* Adds given value at start of a vector */
+void vector_add_to_start(Vector *v, double value);
 
 /* Removes value at the end of a vector
-This is actually done by using a lazy delete so the element continues in memory
+This is actually done by using a lazy delete so the element continues in memory until reallocation
 Fails assertion if list is empty */
 void vector_remove(Vector *v);
+
+/* Removes value at given index of a vector
+Fails assertion if list is empty or if given index is invalid */
+void vector_remove_at_index(Vector *v, int index);
+
+/* Removes first value of a vector
+Fails assertion if list is empty */
+void vector_remove_first(Vector *v);
 
 
 /* Frees all allocated memory of a vector */

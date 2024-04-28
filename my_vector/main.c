@@ -10,25 +10,27 @@ int main()
     srand(time(NULL));
     
     Vector *v = vector_create();
-
     vector_println(v);
-    printf("Array size = %d\n", v->array_size);
-    printf("Size = %d\n", vector_size(v));
 
-    for (int i = 0; i < 100; i++)
+    vector_add(v, 0);
+    vector_println(v);
+
+    vector_remove_first(v);
+    vector_println(v);
+
+    for (int i = 0; i < 10; i++)
         vector_add(v, i); 
-
     vector_println(v);
-    printf("Array size = %d\n", v->array_size);
-    printf("Size = %d\n", vector_size(v));    
 
-    for (int i = 0; i < 50; i++)
-        vector_remove(v); 
-
+    vector_remove(v);
     vector_println(v);
-    printf("Array size = %d\n", v->array_size);
-    printf("Size = %d\n", vector_size(v));    
-
+    
+    vector_remove_first(v);
+    vector_println(v);
+    
+    vector_remove_at_index(v, 5);
+    vector_println(v);
+    
     vector_destroy(v);
 
     return 0;
