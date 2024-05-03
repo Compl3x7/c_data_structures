@@ -1,21 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
+#include <time.h>
 
 #include "my_vector.h"
 
 #define INIT_ARRAY_SIZE 16
 
-VectorError VECTOR_GLOBAL_ERROR = VECTOR_SUCCESS;
+VectorError VECTOR_GLOBAL_ERROR;
 
 Vector* vector_create()
 {
+    srand(time(NULL));
     Vector *v = malloc(sizeof(Vector));
     v->buffer = malloc(INIT_ARRAY_SIZE * sizeof(double));
     v->buffer_size = INIT_ARRAY_SIZE;
     v->size = 0;
     return v;
+}
+
+Vector* vector_copy(Vector *v)
+{
+    Vector *v_copy = malloc(sizeof(Vector));
+    v_copy->buffer = malloc(v->buffer_size * sizeof(double));
+    memcpy(v_copy->buffer, v->buffer, v->size * sizeof(double));
+    v_copy->buffer_size = v->buffer_size;
+    v_copy->size = v->size;
+    return v_copy;
+}
+
+void vector_destroy(Vector *v)
+{
+    free(v->buffer);
+    free(v);
 }
 
 void vector_println(Vector *v)
@@ -41,10 +58,10 @@ size_t vector_size(Vector *v)
 
 /* Checks for possible errors, stores it on error and returns it's value 
 Auxiliary funtion */
-VectorError has_errors(VectorError *error, Vector *v, int empty_check, size_t *index_to_check)
+VectorError check_errors(VectorError *error, Vector *v, int empty_check, size_t *index_to_check)
 {
-    if (error == NULL) //Ignoring errors
-        return VECTOR_SUCCESS; 
+    if (error == IGNORE_ERRORS) //Ignoring error checks
+        return VECTOR_SUCCESS;
 
     if (empty_check && v->size == 0)
         *error = VECTOR_EMPTY;
@@ -58,7 +75,7 @@ VectorError has_errors(VectorError *error, Vector *v, int empty_check, size_t *i
 
 double vector_get(Vector *v, size_t index, VectorError *error)
 {   
-    if (has_errors(error, v, 0, &index))
+    if (check_errors(error, v, 0, &index) != VECTOR_SUCCESS)
         return 0;
 
     return v->buffer[index];
@@ -66,18 +83,10 @@ double vector_get(Vector *v, size_t index, VectorError *error)
 
 size_t vector_find(Vector *v, double value, int *found)
 {
-    size_t left = 0;
-    size_t right = v->size - 1;
     *found = 1;
-    while (left <= right)
-    {
-        if (v->buffer[left] == value) 
-            return left;
-        if (v->buffer[right] == value)
-            return right;
-        left++;
-        right--;
-    }
+    for (size_t i = 0; i < v->size; i++)
+        if (v->buffer[i] == value)
+            return i;
     *found = 0;
     return *found;
 }
@@ -107,7 +116,7 @@ void vector_add(Vector *v, double value)
 
 void vector_add_at_index(Vector *v, size_t index, double value, VectorError *error)
 {
-    if (has_errors(error, v, 0, &index))
+    if (check_errors(error, v, 0, &index) != VECTOR_SUCCESS)
         return;
 
     if (v->size >= v->buffer_size)
@@ -124,12 +133,12 @@ void vector_add_to_start(Vector *v, double value)
     if (v->size == 0)
         vector_add(v, value);
     else
-        vector_add_at_index(v, 0, value, NULL); //Ignore error checking by passing NULL  
+        vector_add_at_index(v, 0, value, IGNORE_ERRORS);  
 }
 
 void vector_remove(Vector *v, VectorError *error)
 {
-    if (has_errors(error, v, 1, NULL))
+    if (check_errors(error, v, 1, NULL))
         return;
 
     v->size--; //Lazy delete
@@ -140,11 +149,11 @@ void vector_remove(Vector *v, VectorError *error)
 
 void vector_remove_at_index(Vector *v, size_t index, VectorError *error)
 {
-    if (has_errors(error, v, 0, &index))
+    if (check_errors(error, v, 0, &index))
         return;
 
     if (index == v->size - 1)
-        vector_remove(v, NULL); //Ignore error checking by passing NULL
+        vector_remove(v, IGNORE_ERRORS);
     else
     {
         double *src = v->buffer + index + 1;
@@ -164,9 +173,56 @@ void vector_remove_first(Vector *v, VectorError *error)
         vector_remove_at_index(v, 0, error);    
 }
 
-
-void vector_destroy(Vector *v)
+void vector_set_at_index(Vector *v, size_t index, double value, VectorError *error)
 {
-    free(v->buffer);
-    free(v);
+    if (check_errors(error, v, 0, &index) != VECTOR_SUCCESS)
+        return;
+
+    v->buffer[index] = value;
+}
+
+/* Swaps elements at i and j in vector
+Auxiliary function */
+void vector_swap(Vector *v, size_t i, size_t j)
+{
+    double temp = v->buffer[i];
+    v->buffer[i] = v->buffer[j];
+    v->buffer[j] = temp;
+}
+
+size_t vector_partition(Vector *v, size_t low, size_t high, int(*cmp)(double, double))
+{
+    size_t size = high - low + 1;
+    size_t pivot_index = low + rand() % size;
+    double pivot = v->buffer[pivot_index];
+    vector_swap(v, low, pivot_index); //Pivot is temporarily in v->buffer[low] to perform a traditional partition
+
+    size_t i = low + 1;
+    size_t j = high;
+    while (i < j)
+    {
+        while (cmp(v->buffer[i], pivot) <= 0 && i <= high)
+            i++;
+        while (cmp(v->buffer[j], pivot) > 0 && j >= low)
+            j++;
+        if (i < j)
+            vector_swap(v, i, j);
+    }
+    vector_swap(v, low, j);
+    return j;
+}
+
+void vector_bounded_rqsort(Vector *v, size_t low, size_t high, int(*cmp)(double, double))
+{
+    if (low >= high)
+        return;
+
+    size_t pivot_index = vector_partition(v, low, high, cmp);
+    vector_bounded_rqsort(v, low, pivot_index - 1, cmp);
+    vector_bounded_rqsort(v, pivot_index + 1, high, cmp);
+}
+
+void vector_rqsort(Vector *v, int(*cmp)(double, double))
+{
+    vector_bounded_rqsort(v, 0, v->size - 1, cmp);
 }

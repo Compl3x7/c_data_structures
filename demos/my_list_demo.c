@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <time.h>
 
-#include "my_list.h"
+#include "./../my_list/my_list.h" //Long ass include
 
 void remove_duplicates(List *l)
 {
