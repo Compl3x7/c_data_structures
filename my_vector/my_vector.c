@@ -60,7 +60,7 @@ size_t vector_size(Vector *v)
 Auxiliary funtion */
 VectorError check_errors(VectorError *error, Vector *v, int empty_check, size_t *index_to_check)
 {
-    if (error == IGNORE_ERRORS) //Ignoring error checks
+    if (error == VECTOR_IGNORE_ERRORS) //Ignoring error checks
         return VECTOR_SUCCESS;
 
     if (empty_check && v->size == 0)
@@ -133,7 +133,7 @@ void vector_add_to_start(Vector *v, double value)
     if (v->size == 0)
         vector_add(v, value);
     else
-        vector_add_at_index(v, 0, value, IGNORE_ERRORS);  
+        vector_add_at_index(v, 0, value, VECTOR_IGNORE_ERRORS);  
 }
 
 void vector_remove(Vector *v, VectorError *error)
@@ -153,7 +153,7 @@ void vector_remove_at_index(Vector *v, size_t index, VectorError *error)
         return;
 
     if (index == v->size - 1)
-        vector_remove(v, IGNORE_ERRORS);
+        vector_remove(v, VECTOR_IGNORE_ERRORS);
     else
     {
         double *src = v->buffer + index + 1;
@@ -190,39 +190,46 @@ void vector_swap(Vector *v, size_t i, size_t j)
     v->buffer[j] = temp;
 }
 
-size_t vector_partition(Vector *v, size_t low, size_t high, int(*cmp)(double, double))
+/* Partition method for qsort 
+Auxiliary function */
+size_t vector_partition(Vector *v, size_t low, size_t high, double(*cmp)(double, double))
 {
     size_t size = high - low + 1;
-    size_t pivot_index = low + rand() % size;
+    size_t pivot_index = low + (rand() % size);
     double pivot = v->buffer[pivot_index];
-    vector_swap(v, low, pivot_index); //Pivot is temporarily in v->buffer[low] to perform a traditional partition
+    vector_swap(v, low, pivot_index); //Pivot is temporarily moved to v->buffer[low] to perform a traditional partition
 
-    size_t i = low + 1;
+    size_t i = low + 1; //Shifts one to the right to ignore pivot
     size_t j = high;
-    while (i < j)
+    while (i <= j)
     {
-        while (cmp(v->buffer[i], pivot) <= 0 && i <= high)
+        while (cmp(v->buffer[i], pivot) < 0 && i <= j)
             i++;
-        while (cmp(v->buffer[j], pivot) > 0 && j >= low)
-            j++;
-        if (i < j)
-            vector_swap(v, i, j);
+        while (cmp(v->buffer[j], pivot) > 0 && j >= i)
+            j--;
+        if (i <= j)
+            vector_swap(v, i++, j--);   
     }
     vector_swap(v, low, j);
     return j;
 }
 
-void vector_bounded_rqsort(Vector *v, size_t low, size_t high, int(*cmp)(double, double))
+/* Randomized pivot quicksort bounded by a low index and a high index 
+Auxiliary funtion */
+void vector_bounded_rqsort(Vector *v, size_t low, size_t high, double(*cmp)(double, double))
 {
     if (low >= high)
         return;
 
     size_t pivot_index = vector_partition(v, low, high, cmp);
-    vector_bounded_rqsort(v, low, pivot_index - 1, cmp);
-    vector_bounded_rqsort(v, pivot_index + 1, high, cmp);
+    size_t left_high = pivot_index - 1 > pivot_index ? 0 : pivot_index - 1; //Underflow check because of unsigned value
+    size_t right_low = pivot_index + 1;
+
+    vector_bounded_rqsort(v, low, left_high, cmp);
+    vector_bounded_rqsort(v, right_low, high, cmp);
 }
 
-void vector_rqsort(Vector *v, int(*cmp)(double, double))
+void vector_rqsort(Vector *v, double(*cmp)(double, double))
 {
     vector_bounded_rqsort(v, 0, v->size - 1, cmp);
 }

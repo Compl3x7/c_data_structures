@@ -23,7 +23,7 @@ typedef enum VectorError
 /* Global variable for error handling use, to avoid the need of declaring multiple */
 extern VectorError VECTOR_GLOBAL_ERROR;
 
-#define IGNORE_ERRORS NULL
+#define VECTOR_IGNORE_ERRORS NULL
 
 /* Creates a new empty vector and returns its reference, changing such will lead to undefined behavior
 All vector functions expect a valid reference returned by this function or copy function, so it is the caller's responsability to ensure such condition when using this library
@@ -83,6 +83,6 @@ If given index is invalid, error value is set to true (!= VECTOR_SUCCESS) and no
 void vector_set_at_index(Vector *v, size_t index, double value, VectorError *error);
 
 /* Randomized pivot quicksort, sorts vector according to passed cmp function */
-void vector_rqsort(Vector *v, int(*cmp)(double, double));
+void vector_rqsort(Vector *v, double(*cmp)(double, double));
 
 #endif
