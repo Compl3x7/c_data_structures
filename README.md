@@ -8,6 +8,6 @@ In this repository I implement some data structures libraries in C. Due to the C
 
 A simple implementation of a linked list that I built prior to the making of this repository as a way to study and better consolidate my C programming skills. It's probably not even a good implementation, but I have decided to left it like this for now. Finished around 2023's summer and haven't touched on it ever since.
 
-### my_vector (On going...)
+### my_vector (Finished)
 
-A vector (redimensionable array) implementation. This vector isn't implemented with the use of a circular buffer so it's queue-like performace is probably questionable.
+A vector (redimensionable array) implementation. This vector doesn't use a circular buffer so it's queue-like performace is probably questionable.
